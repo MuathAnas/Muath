@@ -7,6 +7,7 @@ import Attendance from './components/Attendance';
 import Timesheet from './components/Timesheet';
 import PayslipPage from './components/PayslipPage';
 import Reports from './components/Reports';
+import APKBuilder from './components/APKBuilder';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
@@ -23,6 +24,7 @@ export default function App() {
     { id: 'timesheet', label: 'Timesheet', icon: 'fa-clock' },
     { id: 'payslip', label: 'Payslip', icon: 'fa-money-bill-wave' },
     { id: 'reports', label: 'Reports', icon: 'fa-file-alt' },
+    { id: 'apk', label: 'Build APK', icon: 'fa-android' },
   ];
 
   const renderContent = () => {
@@ -39,6 +41,8 @@ export default function App() {
         return <PayslipPage employees={employees} payslips={payslips} setPayslips={setPayslips} attendance={attendance} timesheets={timesheets} />;
       case 'reports':
         return <Reports employees={employees} attendance={attendance} timesheets={timesheets} payslips={payslips} />;
+      case 'apk':
+        return <APKBuilder />;
       default:
         return <Dashboard employees={employees} attendance={attendance} timesheets={timesheets} payslips={payslips} />;
     }

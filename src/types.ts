@@ -49,4 +49,4 @@ export interface Payslip {
   linkedAttendance: string[];
 }
 
-export type TabType = 'dashboard' | 'employees' | 'attendance' | 'timesheet' | 'payslip' | 'reports';
+export type TabType = 'dashboard' | 'employees' | 'attendance' | 'timesheet' | 'payslip' | 'reports' | 'apk';

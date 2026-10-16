@@ -2,19 +2,133 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>YRCS Hodeidah - HR Management System</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
+    
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="Yemen Red Crescent Society - Hodeidah Branch HR Management System" />
+    <meta name="theme-color" content="#b91c1c" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="YRCS HR" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="YRCS HR" />
+    <meta name="msapplication-TileColor" content="#b91c1c" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Icons -->
+    <link rel="icon" type="image/svg+xml" href="/icons/icon.svg" />
+    <link rel="apple-touch-icon" href="/icons/icon.svg" />
+    
+    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    
     <style>
       html, body { margin: 0; padding: 0; width: 100%; height: 100%; font-family: 'Inter', sans-serif; }
+      
+      /* Install prompt styles */
+      #install-prompt {
+        display: none;
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(135deg, #dc2626, #991b1b);
+        color: white;
+        padding: 16px 24px;
+        border-radius: 16px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        z-index: 9999;
+        animation: slideUp 0.3s ease-out;
+        max-width: 90%;
+      }
+      
+      #install-prompt.show { display: flex; align-items: center; gap: 12px; }
+      
+      @keyframes slideUp {
+        from { transform: translateX(-50%) translateY(100px); opacity: 0; }
+        to { transform: translateX(-50%) translateY(0); opacity: 1; }
+      }
+      
+      #install-prompt button {
+        background: white;
+        color: #dc2626;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 14px;
+      }
+      
+      #install-prompt .close-btn {
+        background: transparent;
+        color: white;
+        padding: 4px 8px;
+        font-size: 18px;
+      }
     </style>
   </head>
   <body>
     <div id="root"></div>
+    
+    <!-- Install Prompt -->
+    <div id="install-prompt">
+      <i class="fas fa-download text-xl"></i>
+      <div>
+        <p style="margin:0; font-weight:600; font-size:14px;">Install YRCS HR App</p>
+        <p style="margin:2px 0 0; font-size:12px; opacity:0.8;">Add to home screen for quick access</p>
+      </div>
+      <button id="install-btn">Install</button>
+      <button class="close-btn" id="dismiss-btn">&times;</button>
+    </div>
+    
     <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Register Service Worker -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(reg => console.log('SW registered:', reg.scope))
+            .catch(err => console.log('SW registration failed:', err));
+        });
+      }
+      
+      // PWA Install Prompt
+      let deferredPrompt;
+      const installPrompt = document.getElementById('install-prompt');
+      const installBtn = document.getElementById('install-btn');
+      const dismissBtn = document.getElementById('dismiss-btn');
+      
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        installPrompt.classList.add('show');
+      });
+      
+      installBtn.addEventListener('click', async () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+          console.log(`User response: ${outcome}`);
+          deferredPrompt = null;
+          installPrompt.classList.remove('show');
+        }
+      });
+      
+      dismissBtn.addEventListener('click', () => {
+        installPrompt.classList.remove('show');
+      });
+      
+      window.addEventListener('appinstalled', () => {
+        installPrompt.classList.remove('show');
+        console.log('PWA was installed');
+      });
+    </script>
   </body>
 </html>
